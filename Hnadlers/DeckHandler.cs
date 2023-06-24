@@ -1,50 +1,46 @@
-﻿using BlackjackServer.Models;
+﻿using BlackjackServer.Hnadlers;
+using BlackjackServer.Hnadlers.API;
+using BlackjackServer.Models;
 
 namespace BlackjackServer.Services
 {
-    public class DeckHandler
+    public class DeckHandler 
     {
-        private List<Card> cards;
+        private List<CardHandler> cards;
 
         public DeckHandler()
         {
             _createDeck();
         }
+     
 
-       
 
-        public Card DrawCard()
+        public CardHandler DrawCard()
         {
             if (cards.Count == 0)
-            {
                 throw new Exception("The deck is empty");
-            }
 
-            Card topCard = cards[cards.Count - 1];
+            CardHandler topCard = cards[cards.Count - 1];
             cards.RemoveAt(cards.Count - 1);
             return topCard;
         }
 
-        public List<Card> DrawHand()
+        public List<CardHandler> DrawHand()
         {
             if (cards.Count == 0)
-            {
                 throw new Exception("The deck is empty");
-            }
-
-            return new List<Card> { DrawCard(), DrawCard() };
-
+            return new List<CardHandler> { DrawCard(), DrawCard() };
         }
 
         private void _createDeck()
         {
-            this.cards = new List<Card>();
+            cards = new List<CardHandler>();
 
             foreach (var suit in Enum.GetValues(typeof(Suit)))
             {
                 for (short i = 1; i <= 13; i++)
                 {
-                    this.cards.Add(new Card(i, (Suit)suit));
+                    this.cards.Add(new CardHandler(i, (Suit)suit));
                 }
             }
 
@@ -60,10 +56,12 @@ namespace BlackjackServer.Services
             {
                 n--;
                 int k = rng.Next(n + 1);
-                Card value = cards[k];
+                CardHandler value = cards[k];
                 cards[k] = cards[n];
                 cards[n] = value;
             }
         }
+
+     
     }
 }

@@ -1,6 +1,4 @@
-﻿using BlackjackServer.Controllers.Responses;
-using BlackjackServer.Models.RequestsBody;
-using BlackjackServer.Models;
+﻿using BlackjackServer.Models;
 using BlackjackServer.Services;
 using BlackjackServer.Services.API;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BlackjackServer.Controllers.Requests;
+using BlackjackServer.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using BlackjackServer.Hubs.DTOs;
 
 namespace BlackjackServer.Controllers
 {
@@ -17,29 +17,27 @@ namespace BlackjackServer.Controllers
     [ApiController]
     public class GameController : ControllerBase
     {
-       
 
         private readonly IGamesManager _gamesManager;
 
         public GameController(IGamesManager gamesManager)
         {
             _gamesManager = gamesManager;
+         
+            //_gameHub = gameHub;
         }
 
-        [HttpPost("newGame")]
-        public ActionResult<NewGameRes> NewGame([FromQuery] short numOfPlayers)
+        [HttpGet("games")]
+        public  ActionResult<string[]> getAllGames()
         {
-            if (numOfPlayers <= 0 || numOfPlayers >= 4)
-                return BadRequest("Number of players must be above 0");
-
-            GameHandler game = _gamesManager.StartNewGame(numOfPlayers);
-            return Ok(new NewGameRes(game)); 
+            return Ok(_gamesManager.GetAllGames());
         }
 
-        [HttpPost("endgame")]
-        public ActionResult<EndGameRes> EndGame([FromBody] EndGameReq endGameReq)
+        [HttpGet("available")]
+        public ActionResult<string[]> getIsRoomAvailable(string gameId)
         {
-            return Ok(_gamesManager.GetGame(endGameReq.GameId).EndGame(endGameReq));
+            return Ok(_gamesManager.GetGameById(gameId).CheckIfAvilableToAddPlayer());
         }
+
     }
 }
